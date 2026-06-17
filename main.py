@@ -1,9 +1,8 @@
 from pathlib import Path
-from datetime import date, datetime
+from datetime import date
 import json
 import random
 import string
-
 
 
 class Bank:
@@ -36,10 +35,36 @@ class Bank:
         except OSError as err:
             print(f"Error saving database: {err}")
          
-    @staticmethod
-    def _generate_account_no():
-        return "".join(random.choices(string.digits, k = 11))
-
+    
+    def _generate_account_no(self):
+        while True: 
+            account_no = "".join(random.choices(string.digits, k = 11))
+            if not any(acc["Account No."] == account_no for acc in self.data):
+                    return account_no
+            
+    def _find_account(self, account_no, pin):
+        match_list = [found_info for found_info in self.data if found_info["Account No."] == account_no and found_info["PIN"] ==pin]
+        return match_list[0] if match_list else None
+        
+    def _authentication(self):
+        while True:
+            acc_no_input = input("Enter Account No.: ")
+            if not acc_no_input.isdigit():
+                print("Enter Valid Account Number.")
+            else:
+                break
+        while True:
+            acc_pin_input = input("Enter PIN: ")
+            if not acc_pin_input.isdigit():
+                print("Enter Valid PIN.")
+            else:
+                break
+        
+        account = self._find_account(acc_no_input, acc_pin_input)
+        if account is None: 
+            print("Account not found. Check your account number and PIN.")
+        return account
+        
     def create_account(self):
         name = input("Name: ")
         email = input("Email: ")
@@ -49,9 +74,8 @@ class Bank:
                 input_dob = input("Date of Birth (DD/MM/YYYY): ")
                 dob = date.strptime(input_dob, "%d/%m/%Y")
                 break
-            except Exception as e:
-                print(f"Please try again : {e}")
-                
+            except ValueError:
+                print("Please enter a vaild date or in given format.")
             
         today = date.today()
 
@@ -72,8 +96,6 @@ class Bank:
                 print("\nPIN must be exactly 4 digits!\n")
             else:
                 break
-
-            pin = int(pin)
 
         account_details = {
             "Name": name,
