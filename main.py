@@ -163,9 +163,12 @@ class Bank:
 
         if account is None:
             return
-
-        amount = float(input("\nEnter deposit amount: "))
-        amount = round(amount, 2)
+        
+        try: 
+            amount = float(input("\nEnter deposit amount: "))
+            amount = round(amount, 2)
+        except ValueError:
+            print("Enter Valid Amount.")
 
         account["Balance"] += amount
         self._save()
@@ -182,8 +185,12 @@ class Bank:
         
         self._show_details(account)
 
-        amount = float(input("\nEnter withdraw amount: "))
-        amount = round(amount, 2)
+        
+        try:
+            amount = float(input("\nEnter withdraw amount: "))
+            amount = round(amount, 2)
+        except ValueError:
+            print("Enter Valid Amount.")
 
         if amount < 0 :
             print("Amount must be greater than 0.")
